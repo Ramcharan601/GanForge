@@ -1,12 +1,28 @@
+# Week 2 - Task 1: Image Processing with OpenCV
+#=Roll No: 241212
+# IIT Kanpur ACA Summer Project - GanForge
+
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
 def capture_image():
-    cap = cv2.VideoCapture(0)  
-    ret, frame = cap.read()
-    cap.release()
-    return cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    """Generate a synthetic colorful sample image (480x640 RGB)."""
+    h, w = 480, 640
+    # Horizontal gradient for Red channel
+    r = np.tile(np.linspace(30, 240, w, dtype=np.uint8), (h, 1))
+    # Vertical gradient for Green channel
+    g = np.tile(np.linspace(80, 200, h, dtype=np.uint8).reshape(-1, 1), (1, w))
+    # Diagonal gradient for Blue channel
+    x, y = np.meshgrid(np.linspace(0, 1, w), np.linspace(0, 1, h))
+    b = ((np.sin(x * np.pi) * np.cos(y * np.pi) * 0.5 + 0.5) * 200 + 30).astype(np.uint8)
+    # Add circular texture
+    cx, cy = w // 2, h // 2
+    for radius in range(20, 220, 40):
+        cv2.circle(r, (cx, cy), radius, int(255 - radius), 3)
+        cv2.circle(g, (cx, cy), radius, int(radius), 3)
+    image = np.stack([r, g, b], axis=2)
+    return image
 
 def convert_to_hsv(image):
     hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
